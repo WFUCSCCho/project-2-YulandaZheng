@@ -1,3 +1,10 @@
+/****************************************************************************
+ @file: AVLTree.java
+ @description: This is the AVLTree program that runs and had the commands for the AVL tree
+ @author: Yulanda Zheng
+ @date: October 24, 2024
+ ****************************************************************************/
+
 // AvlTree class
 //
 // CONSTRUCTION: with no initializer
@@ -15,6 +22,9 @@
 // ******************ERRORS********************************
 // Throws UnderflowException as appropriate
 
+import java.util.Iterator;
+import java.util.LinkedList;
+
 /**
  * Implements an AVL tree.
  * Note that all "matching" is based on the compareTo method.
@@ -23,6 +33,8 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
     /**
      * Construct the tree.
      */
+    private int size;
+
     public AvlTree( ) {
         root = null;
     }
@@ -51,7 +63,30 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
      * @return the new root of the subtree.
      */
     private AvlNode<AnyType> remove( AnyType x, AvlNode<AnyType> t ) {
-	// FINISH ME
+        if(t == null){
+            return null;
+        } //tree is empty
+        else if(x.compareTo(t.element) < 0){  //recursive to the left
+            t.left = remove(x,t.left);
+        }
+        else if(x.compareTo(t.element) > 0){  //recursive to the right
+            t.right = remove(x,t.right);
+        }
+        else{ // found the Node, only one child
+            if(t.left == null){
+                return balance(t.right);
+            }
+            else if(t.right == null){
+                return balance(t.left);
+            }
+            else{ //Node has two children
+
+                t.element = findMin(t.right).element; //call the min method to find the smallest node
+                t.right = remove(t.element, t.right); // recursively delete Node
+            }
+        }
+        t.height = Math.max(height(t.left), height(t.right)) + 1;
+        return balance(t);
     }
 
     /**
@@ -112,7 +147,31 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
 
     // Assume t is either balanced or within one of being balanced
     private AvlNode<AnyType> balance( AvlNode<AnyType> t ) {
-	// FINISH ME
+	    if(t == null){
+            return null;
+        }
+        if(height(t.left) - height(t.right) > ALLOWED_IMBALANCE){
+            if(height(t.left.left) >= height(t.left.right)){
+                t = rotateWithLeftChild(t); //case i
+            }
+            else {
+                t= doubleWithLeftChild(t); //case ii
+            }
+        }
+        else {
+            if(height(t.right) - height(t.left) > ALLOWED_IMBALANCE){
+                if(height(t.right.right) >= height(t.right.left)){
+                    t = rotateWithRightChild(t); //case iv
+                }
+                else{
+                    t = doubleWithRightChild(t); //case iii
+                }
+            }
+        }
+
+        t.height = Math.max(height(t.left), height(t.right)) + 1;
+        return t;
+
     }
 
     public void checkBalance( ) {
@@ -142,7 +201,20 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
      * @return the new root of the subtree.
      */
     private AvlNode<AnyType> insert( AnyType x, AvlNode<AnyType> t ) {
-	// FINISH ME
+	    if (t == null) {
+            return new AvlNode<>( x );
+        }
+        int compareResult = x.compareTo( t.element );
+
+        if(compareResult < 0){
+            t.left = insert( x, t.left ); //insert left
+        }else if(compareResult > 0){
+            t.right = insert( x, t.right ); //insert right
+        }
+        else { //duplicate, so do nothing
+
+        }
+         return balance(t);
     }
 
     /**
@@ -151,7 +223,15 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
      * @return node containing the smallest item.
      */
     private AvlNode<AnyType> findMin( AvlNode<AnyType> t ) {
-	// FINISH ME
+	    if( t == null ){
+            return null;
+        }
+        else if(t.left == null){ //found the minimum
+            return t;
+        }
+
+        return findMin( t.left );
+
     }
 
     /**
@@ -160,7 +240,13 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
      * @return node containing the largest item.
      */
     private AvlNode<AnyType> findMax( AvlNode<AnyType> t ) {
-	// FINISH ME
+        if( t == null ){
+            return null;
+        }
+        else if(t.right == null){
+            return t;
+        }
+        return findMax( t.right );
     }
 
     /**
@@ -170,7 +256,18 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
      * @return true if x is found in subtree.
      */
     private boolean contains( AnyType x, AvlNode<AnyType> t ) {
-	// FINISH ME
+        if (t == null) {
+            return false;
+        }
+        if(t.element.compareTo( x ) > 0){ //search left subtree
+            return contains( x, t.left );
+        }
+        else if(t.element.compareTo(x) < 0){ //search right subtree
+            return contains( x, t.right );
+        }
+        else {
+            return true; //found it
+        }
     }
 
     /**
@@ -178,7 +275,46 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
      * @param t the node that roots the tree.
      */
     private void printTree( AvlNode<AnyType> t ) {
-	// FINISH ME
+        AvlIterator it = new AvlIterator(t);
+        String s = "";
+
+        while(it.hasNext()){
+            s += (it.next() + " ");
+        }
+
+        System.out.println(s);
+
+    }
+
+    public class AvlIterator implements Iterator<AnyType> {
+        LinkedList<AvlNode<AnyType>> stack = new LinkedList<>();
+
+        public AvlIterator(AvlNode<AnyType> rt) {
+           AvlNode<AnyType> t = rt;
+            pushLeft(t);
+        }
+
+        @Override
+        public boolean hasNext() {
+            return !stack.isEmpty();
+        }
+
+        @Override
+        public AnyType next() {
+
+            AvlNode<AnyType> node = stack.pop(); //Get next node
+            pushLeft(node.right); //push all the left children of the node
+            return node.element;
+        }
+
+        //Method to push the left children of a node
+        public void pushLeft(AvlNode<AnyType> curr){
+            while(curr !=null){
+                stack.push(curr);
+                curr = curr.left; // push left children
+            }
+        }
+
     }
 
     /**
@@ -194,7 +330,12 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
      * Update heights, then return new root.
      */
     private AvlNode<AnyType> rotateWithLeftChild( AvlNode<AnyType> k2 ) {
-	// FINISH ME
+	    AvlNode<AnyType> k1 = k2.left;
+        k2.left = k1.right;
+        k1.right = k2;
+        k2.height = Math.max(height( k2.left), height( k2.right )) + 1;
+        k1.height = Math.max(height( k1.left), k2.height) + 1;
+        return k1;
     }
 
     /**
@@ -203,7 +344,12 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
      * Update heights, then return new root.
      */
     private AvlNode<AnyType> rotateWithRightChild( AvlNode<AnyType> k1 ) {
-	// FINISH ME
+	    AvlNode<AnyType> k2 = k1.right;
+        k1.right = k2.left;
+        k2.left = k1;
+        k1.height = Math.max(height( k1.left), height( k1.right )) + 1;
+        k2.height = Math.max(height( k2.right), k1.height) + 1;
+        return k2;
     }
 
     /**
@@ -213,7 +359,9 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
      * Update heights, then return new root.
      */
     private AvlNode<AnyType> doubleWithLeftChild( AvlNode<AnyType> k3 ) {
-	// FINISH ME
+	    k3.left = rotateWithRightChild(k3.left);
+        return rotateWithLeftChild(k3);
+
     }
 
     /**
@@ -223,7 +371,8 @@ public class AvlTree<AnyType extends Comparable<? super AnyType>> {
      * Update heights, then return new root.
      */
     private AvlNode<AnyType> doubleWithRightChild( AvlNode<AnyType> k1 ) {
-	// FINISH ME
+	    k1.right = rotateWithLeftChild(k1.right);
+        return rotateWithRightChild(k1);
     }
 
     private static class AvlNode<AnyType> {

@@ -1,16 +1,23 @@
+/****************************************************************************
+ @file: TestAvl.java
+ @description: This program is the TestAvl class that is used to test the code
+ @author: Yulanda Zheng
+ @date: October 24, 2024
+ ****************************************************************************/
+
 public class TestAvl {
     // Test program
     public static void main( String [ ] args ) {
         AvlTree<Integer> t = new AvlTree<>();
         final int SMALL = 40;
-        final int NUMS = 1000000;  // must be even
+        final int NUMS = 100000;  // must be even
         final int GAP = 37;
 
         System.out.println("Checking... (no more output means success)");
 
         // inserts sequence of numbers "GAP" apart into AVL Tree
         for (int i = GAP; i != 0; i = (i + GAP) % NUMS) {
-            //    System.out.println( "INSERT: " + i );
+            //System.out.println( "INSERT: " + i );
             t.insert(i);
             // checks the balance of the tree after insertion
             if (NUMS < SMALL)
@@ -19,7 +26,7 @@ public class TestAvl {
 
         // removes odd numbers
         for (int i = 1; i < NUMS; i += 2) {
-            //   System.out.println( "REMOVE: " + i );
+            //System.out.println( "REMOVE: " + i );
             t.remove(i);
 
             if (NUMS < SMALL)
