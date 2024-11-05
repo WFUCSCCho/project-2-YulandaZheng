@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-class BST<E extends Comparable<? super E>> {
+public class BST<E extends Comparable<? super E>> {
 
     private Node<E> root;
     private int size;
