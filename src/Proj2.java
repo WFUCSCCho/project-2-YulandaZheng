@@ -21,13 +21,14 @@ public class Proj2 {
         String inputFileName = args[0];
         int numLines = Integer.parseInt(args[1]);
 
-        ArrayList<String> arr = new ArrayList<>();
-        ArrayList<String> og = new ArrayList<>();
+        ArrayList<Cat> arr = new ArrayList<>();
+        ArrayList<Cat> og;
+        Cat kitty;
 
         //For calculating time
-        long start = 0;
-        long end = 0;
-        long temp = 0;
+        long start;
+        long end;
+        long temp;
 
         // For file input
         FileInputStream inputFileNameStream = null;
@@ -42,8 +43,12 @@ public class Proj2 {
 
         //putting lines in an array list
         for(int i = 0; i < numLines; i++) {
-            arr.add(inputFileNameScanner.nextLine());
+            String tempLine = inputFileNameScanner.nextLine();
+            String[] line = tempLine.split(",");
+            kitty = new Cat(line[0], Integer.parseInt(line[1]), Integer.parseInt(line[2]),line[3],line[4]);
+            arr.add(kitty);
         }
+
         og = arr; //keep original
         Collections.sort(arr); // sort the array
 
@@ -52,9 +57,7 @@ public class Proj2 {
 
         start = System.nanoTime();
         for(int i = 0; i < numLines; i++) {
-            String[] line = arr.get(i).split(",");
-            Cat kitty = new Cat(line[0], Integer.parseInt(line[1]), Integer.parseInt(line[2]),line[3],line[4]);
-            sortedBST.insert(kitty);
+            sortedBST.insert(arr.get(i));
         }
         end = System.nanoTime();
         temp = end - start;
@@ -65,9 +68,7 @@ public class Proj2 {
 
         start = System.nanoTime();
         for(int i = 0; i < numLines; i++) {
-            String[] line = arr.get(i).split(",");
-            Cat kitty = new Cat(line[0], Integer.parseInt(line[1]), Integer.parseInt(line[2]),line[3],line[4]);
-            sortedAVL.insert(kitty);
+            sortedAVL.insert(arr.get(i));
         }
         end = System.nanoTime();
         temp = end - start;
@@ -80,9 +81,8 @@ public class Proj2 {
 
         start = System.nanoTime();
         for(int i = 0; i < numLines; i++) {
-            String[] line = arr.get(i).split(",");
-            Cat kitty = new Cat(line[0], Integer.parseInt(line[1]), Integer.parseInt(line[2]),line[3],line[4]);
-            shuffleBST.insert(kitty);
+
+            shuffleBST.insert(arr.get(i));
         }
         end = System.nanoTime();
         temp = end - start;
@@ -94,9 +94,8 @@ public class Proj2 {
 
         start = System.nanoTime();
         for(int i = 0; i < numLines; i++) {
-            String[] line = arr.get(i).split(",");
-            Cat kitty = new Cat(line[0], Integer.parseInt(line[1]), Integer.parseInt(line[2]),line[3],line[4]);
-            shuffleAVL.insert(kitty);
+
+            shuffleAVL.insert(arr.get(i));
         }
         end = System.nanoTime();
         temp = end - start;
@@ -106,9 +105,7 @@ public class Proj2 {
         //Search sorted BST against original array
         start = System.nanoTime();
         for (int i = 0; i < numLines; i++) {
-            String[] line = og.get(i).split(",");
-            Cat kitty = new Cat(line[0], Integer.parseInt(line[1]), Integer.parseInt(line[2]),line[3],line[4]);
-            sortedBST.search(kitty);
+            sortedBST.search(og.get(i));
         }
         end = System.nanoTime();
         temp = end - start;
@@ -118,9 +115,8 @@ public class Proj2 {
         //Search sorted AVLTree against original array
         start = System.nanoTime();
         for (int i = 0; i < numLines; i++) {
-            String[] line = og.get(i).split(",");
-            Cat kitty = new Cat(line[0], Integer.parseInt(line[1]), Integer.parseInt(line[2]),line[3],line[4]);
-            sortedAVL.contains(kitty);
+
+            sortedAVL.contains(og.get(i));
         }
         end = System.nanoTime();
         temp = end - start;
@@ -130,9 +126,7 @@ public class Proj2 {
         //Search shuffled BST against original array
         start = System.nanoTime();
         for (int i = 0; i < numLines; i++) {
-            String[] line = og.get(i).split(",");
-            Cat kitty = new Cat(line[0], Integer.parseInt(line[1]), Integer.parseInt(line[2]),line[3],line[4]);
-            shuffleBST.search(kitty);
+            shuffleBST.search(og.get(i));
         }
         end = System.nanoTime();
         temp = end - start;
@@ -142,9 +136,7 @@ public class Proj2 {
         //Search sorted AVLTree against original array
         start = System.nanoTime();
         for (int i = 0; i < numLines; i++) {
-            String[] line = og.get(i).split(",");
-            Cat kitty = new Cat(line[0], Integer.parseInt(line[1]), Integer.parseInt(line[2]),line[3],line[4]);
-            shuffleAVL.contains(kitty);
+            shuffleAVL.contains(og.get(i));
         }
         end = System.nanoTime();
         temp = end - start;
